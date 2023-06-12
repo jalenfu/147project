@@ -1,0 +1,88 @@
+#include "SparkFunLSM6DSO.h"
+#include "Wire.h"
+#include "DHT20.h"
+//#include "SPI.h"
+
+LSM6DSO myIMU; //Default constructor is I2C, addr 0x6B
+DHT20 DHT;
+
+int maxLight = 0;
+int minLight = 1024;
+
+void setup() {
+  Serial.begin(9600);
+  delay(500); 
+
+  DHT.begin();
+  Wire.begin();
+  delay(10);
+  if( myIMU.begin() )
+    Serial.println("Ready.");
+  else { 
+    Serial.println("Could not connect to IMU.");
+    Serial.println("Freezing");
+  }
+
+  if( myIMU.initialize(BASIC_SETTINGS) )
+    Serial.println("Loaded Settings.");
+
+  int currentLight = 0;
+  unsigned long time = 0;
+  Serial.println("Calibrating...");
+  while (time < 10000)
+  {
+    delay(250);
+    currentLight = analogRead(2);
+    if (currentLight > maxLight)
+    {
+      maxLight = currentLight;
+    }
+    if (currentLight < minLight)
+    {
+      minLight = currentLight;
+    }
+    delay(250);
+    time = millis();
+  }
+  Serial.println("Done!");
+}
+
+
+void loop()
+{
+  //Get all parameters
+  Serial.print("\nAccelerometer:\n");
+  Serial.print(" X = ");
+  Serial.println(myIMU.readFloatAccelX(), 3);
+  Serial.print(" Y = ");
+  Serial.println(myIMU.readFloatAccelY(), 3);
+  Serial.print(" Z = ");
+  Serial.println(myIMU.readFloatAccelZ(), 3);
+
+  Serial.print("\nGyroscope:\n");
+  Serial.print(" X = ");
+  Serial.println(myIMU.readFloatGyroX(), 3);
+  Serial.print(" Y = ");
+  Serial.println(myIMU.readFloatGyroY(), 3);
+  Serial.print(" Z = ");
+  Serial.println(myIMU.readFloatGyroZ(), 3);
+
+  Serial.print("\nThermometer:\n");
+  Serial.print(" Degrees F = ");
+  Serial.println(myIMU.readTempF(), 3);
+
+  DHT.read();
+  Serial.print("\nTemperature:\n");
+  Serial.print(" Degrees F = ");
+  Serial.println(DHT.getTemperature(), 3);
+
+  Serial.print("\nHumidity:\n ");
+  Serial.println(DHT.getHumidity(), 3);
+
+  int light = analogRead(2);
+  int mappedLight = map(light, minLight, maxLight, 0, 128);
+  Serial.print("\nLight:\n ");
+  Serial.println(mappedLight);
+
+  delay(1000);
+}
