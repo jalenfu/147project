@@ -134,8 +134,8 @@ $(document).ready(() => {
         },
         position: 'left',
         ticks: {
-          suggestedMin: 0,
-          suggestedMax: 100,
+          suggestedMin: -10,
+          suggestedMax: 40,
           beginAtZero: true
         }
       },
@@ -149,7 +149,7 @@ $(document).ready(() => {
         position: 'left',
         ticks: {
           suggestedMin: 0,
-          suggestedMax: 100,
+          suggestedMax: 60,
           beginAtZero: true
         }
       },
