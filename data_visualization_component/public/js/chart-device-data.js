@@ -22,10 +22,10 @@ $(document).ready(() => {
     addData(time, temperature, humidity, light, gyro, accel) {
       this.timeData.push(time);
       this.temperatureData.push(temperature);
-      this.humidityData.push(humidity || null);
-      this.lightData.push(light || null);
-      this.gyroData.push(gyro || null);
-      this.accelData.push(accel || null);
+      this.humidityData.push(humidity);
+      this.lightData.push(light);
+      this.gyroData.push(gyro);
+      this.accelData.push(accel);
 
       if (this.timeData.length > this.maxLen) {
         this.timeData.shift();
@@ -245,7 +245,7 @@ $(document).ready(() => {
         var timeDifferenceMs = currentTime - givenTimestamp;
 
         // Convert milliseconds to minutes
-        var timeDifferenceMinutes = Math.floor(timeDifferenceMs / 1000);
+        var timeDifferenceMinutes = Math.floor((timeDifferenceMs / 1000) + 1);
 
         // Print the time difference in minutes
         console.log("Seconds since last moved:", timeDifferenceMinutes);
@@ -259,12 +259,14 @@ $(document).ready(() => {
   function reportTemperature(data)
   {
     const tempData = data.temperatureData;
-    const averageTemp = tempData.reduce((acc, val) => acc + val, 0) / tempData.length;
+    const nonEmptyValues = tempData.filter(val => typeof val === 'number');
+    const averageTemp = nonEmptyValues.reduce((acc, val) => acc + val, 0) / nonEmptyValues.length;
+
     console.log('Average Temperature is:', averageTemp);
     if (averageTemp > 32)
     {
       console.log('Warning! Average temperature is above recommended levels (32˚C). Please find a way to cool off.')
-    } else if (averageTemp > 0)
+    } else if (averageTemp < 0)
     {
       console.log('Warning! Average temperature is below freezing (0˚C)! Please find a way to warm up.')
     }
@@ -316,6 +318,7 @@ $(document).ready(() => {
       }
 
       findTimeSinceLastMove(existingDeviceData, 2);
+      reportTemperature(existingDeviceData);
       myLineChart.update();
     } catch (err) {
       console.error(err);
