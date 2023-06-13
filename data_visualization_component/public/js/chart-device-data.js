@@ -255,6 +255,20 @@ $(document).ready(() => {
   
     return undefined; // No outlier found
   }
+
+  function reportTemperature(data)
+  {
+    const tempData = data.temperatureData;
+    const averageTemp = tempData.reduce((acc, val) => acc + val, 0) / tempData.length;
+    console.log('Average Temperature is:', averageTemp);
+    if (averageTemp > 32)
+    {
+      console.log('Warning! Average temperature is above recommended levels (32˚C). Please find a way to cool off.')
+    } else if (averageTemp > 0)
+    {
+      console.log('Warning! Average temperature is below freezing (0˚C)! Please find a way to warm up.')
+    }
+  }
   
 
   // When a web socket message arrives:
